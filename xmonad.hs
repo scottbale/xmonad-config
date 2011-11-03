@@ -3,25 +3,6 @@ import XMonad.Core
 import XMonad.Config.Gnome
 import qualified XMonad.StackSet as W
 import qualified Data.Map        as M
-import XMonad.Layout.Tabbed
-import XMonad.Layout.ResizableTile
-import XMonad.Layout.Grid
-import XMonad.Layout.Magnifier
-import XMonad.Layout.TabBarDecoration
-import XMonad.Hooks.DynamicLog hiding (shorten)
-import XMonad.Actions.CycleWS
-import XMonad.Hooks.ManageDocks
-import XMonad.Hooks.EwmhDesktops
-import XMonad.Actions.DwmPromote
-import XMonad.Actions.UpdatePointer
-import XMonad.Hooks.UrgencyHook
-import XMonad.Util.Run (spawnPipe)
-import System.IO 
-import XMonad.Prompt
-import XMonad.Prompt.Shell
-import XMonad.Util.WorkspaceCompare
-import XMonad.Util.EZConfig
-import XMonad.Actions.Warp
 
 -- Ignore Gnome-Do
 myManageHook :: [ManageHook]
@@ -45,22 +26,36 @@ toRemove XConfig{modMask = modm} =
     ] 
 -- These are my personal key bindings
 toAdd conf@(XConfig{modMask = modm}) =
-    [ ((modm              , xK_minus   ), sendMessage Shrink )
-    , ((modm              , xK_equal   ), sendMessage Expand )
-    , ((modm              , xK_y       ), kill )
+    [ ((modm              , xK_minus     ), sendMessage Shrink )
+    , ((modm              , xK_equal     ), sendMessage Expand )
+    , ((modm              , xK_y         ), kill )
+    , ((modm              , xK_l         ), windows toggleScreenFocus )
+    , ((modm              , xK_semicolon ), windows greedyMoveWindow )
     ] ++
 
-    -- mod-{u,i,o} for workspaces 1,2,3    
+    -- mod-{u,i,o,p,]} for workspaces 1,2,3,4,5    
     [((m .|. modm, key), windows $ f i)
-        | (i, key) <- zip (XMonad.workspaces conf) [xK_u, xK_i, xK_o]
+        | (i, key) <- zip (XMonad.workspaces conf) [xK_u, xK_i, xK_o, xK_p, xK_bracketleft]
         , (f, m) <- [(W.greedyView, 0), (W.shift, shiftMask)]]
-    ++
 
-    -- mod-{l,;} %! Switch to physical/Xinerama screens 1 or 2
-    -- mod-shift-{l,;} %! Move client to screen 1 or 2
-    [((m .|. modm, key), screenWorkspace sc >>= flip whenJust (windows . f))
-        | (key, sc) <- zip [xK_l, xK_semicolon] [0..]
-        , (f, m) <- [(W.view, 0), (W.shift, shiftMask)]]
+-- Move window to next Xinerama screen, and follow focus
+greedyMoveWindow :: WindowSet->WindowSet
+greedyMoveWindow = doToNextScreen greedyMoveWinFn
+   where greedyMoveWinFn i ws = W.view i (W.shift i ws)
+
+-- Toggle focus to next Xinerama screen (if more than one)
+toggleScreenFocus :: WindowSet->WindowSet
+toggleScreenFocus = doToNextScreen W.view
+
+-- takes a function that operates on a workspace ID, and invokes it using the 
+-- workspace ID of the next Xinerama screen.
+doToNextScreen :: (WorkspaceId->WindowSet->WindowSet) -> WindowSet -> WindowSet
+doToNextScreen fn ws = flip fn ws workspaceId
+   where workspaceId = (nextXineramaWorkspaceId . W.visible) ws
+
+nextXineramaWorkspaceId :: [W.Screen WorkspaceId l a ScreenId sd]->WorkspaceId
+nextXineramaWorkspaceId [] = "-1" -- only one monitor
+nextXineramaWorkspaceId xs = W.tag (W.workspace (head xs))
 
 main = do 
   xmonad $ gnomeConfig

@@ -50,8 +50,8 @@ toggleScreenFocus = doToNextScreen W.view
 -- takes a function that operates on a workspace ID, and invokes it using the 
 -- workspace ID of the next Xinerama screen.
 doToNextScreen :: (WorkspaceId->WindowSet->WindowSet) -> WindowSet -> WindowSet
-doToNextScreen fn ws = flip fn ws workspaceId
-   where workspaceId = (nextXineramaWorkspaceId . W.visible) ws
+doToNextScreen fn ws = fn wid ws
+   where wid = (nextXineramaWorkspaceId . W.visible) ws
 
 nextXineramaWorkspaceId :: [W.Screen WorkspaceId l a ScreenId sd]->WorkspaceId
 nextXineramaWorkspaceId [] = "-1" -- only one monitor

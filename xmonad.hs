@@ -53,7 +53,7 @@ doToNextScreen :: (WorkspaceId->WindowSet->WindowSet) -> WindowSet -> WindowSet
 doToNextScreen fn ws = fn wid ws
    where wid = (nextXineramaWorkspaceId . W.visible) ws
 
-nextXineramaWorkspaceId :: [W.Screen WorkspaceId l a ScreenId sd]->WorkspaceId
+nextXineramaWorkspaceId :: [W.Screen WorkspaceId l a sid sd]->WorkspaceId
 nextXineramaWorkspaceId [] = "-1" -- only one monitor
 nextXineramaWorkspaceId xs = W.tag (W.workspace (head xs))
 

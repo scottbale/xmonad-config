@@ -51,12 +51,14 @@ toggleScreenFocus = doToNextScreen W.view
 -- takes a function that operates on a workspace ID, and invokes it using the 
 -- workspace ID of the next Xinerama screen.
 doToNextScreen :: (WorkspaceId->WindowSet->WindowSet) -> WindowSet -> WindowSet
-doToNextScreen fn ws = fn wid ws
-   where wid = (nextXineramaWorkspaceId . W.visible) ws
+doToNextScreen fn ws = case maybeWid of
+                  Just wid -> fn wid ws
+                  Nothing -> ws
+   where maybeWid = (nextXineramaWorkspaceId . W.visible) ws
 
-nextXineramaWorkspaceId :: [W.Screen WorkspaceId l a sid sd]->WorkspaceId
-nextXineramaWorkspaceId [] = "-1" -- only one monitor
-nextXineramaWorkspaceId xs = W.tag (W.workspace (head xs))
+nextXineramaWorkspaceId :: [W.Screen WorkspaceId l a sid sd]->Maybe WorkspaceId
+nextXineramaWorkspaceId [] = Nothing -- only one monitor
+nextXineramaWorkspaceId xs = Just (W.tag (W.workspace (head xs)))
 
 main = do 
   xmonad =<< xmobar gnomeConfig

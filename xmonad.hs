@@ -1,12 +1,13 @@
 import XMonad
 import XMonad.Core
 import XMonad.Config.Gnome
+import XMonad.Hooks.DynamicLog
 import qualified XMonad.StackSet as W
 import qualified Data.Map        as M
 
 -- Ignore Gnome-Do
 myManageHook :: [ManageHook]
-myManageHook =
+myManageHook = 
   [resource =? "Do" --> doIgnore]
 
 defKeys    = keys defaultConfig
@@ -58,7 +59,7 @@ nextXineramaWorkspaceId [] = "-1" -- only one monitor
 nextXineramaWorkspaceId xs = W.tag (W.workspace (head xs))
 
 main = do 
-  xmonad $ gnomeConfig
+  xmonad =<< xmobar gnomeConfig
     { terminal  = "gnome-terminal"
     , modMask   = mod4Mask
     , focusFollowsMouse = False

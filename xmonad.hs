@@ -1,6 +1,7 @@
 import XMonad
 import XMonad.Core
 import XMonad.Config.Gnome
+import XMonad.Hooks.SetWMName
 import XMonad.Hooks.DynamicLog
 import qualified XMonad.StackSet as W
 import qualified Data.Map        as M
@@ -67,4 +68,5 @@ main = do
     , focusFollowsMouse = False
     , manageHook = manageHook gnomeConfig <+> composeAll myManageHook
     , keys = newKeys
+    , startupHook = setWMName "LG3D"
     }

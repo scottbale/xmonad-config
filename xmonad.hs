@@ -35,9 +35,9 @@ toAdd conf@(XConfig{modMask = modm}) =
     , ((modm              , xK_semicolon ), windows greedyMoveWindow )
     ] ++
 
-    -- mod-{u,i,o,p,]} for workspaces 1,2,3,4,5    
+    -- mod-{u,i,o,p,[,]} for workspaces 1,2,3,4,5,6
     [((m .|. modm, key), windows $ f i)
-        | (i, key) <- zip (XMonad.workspaces conf) [xK_u, xK_i, xK_o, xK_p, xK_bracketleft]
+        | (i, key) <- zip (XMonad.workspaces conf) [xK_u, xK_i, xK_o, xK_p, xK_bracketleft, xK_bracketright]
         , (f, m) <- [(W.greedyView, 0), (W.shift, shiftMask)]]
 
 -- Move window to next Xinerama screen, and follow focus

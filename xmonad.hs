@@ -3,6 +3,7 @@ import XMonad.Core
 import XMonad.Config.Gnome
 import XMonad.Hooks.SetWMName
 import XMonad.Hooks.DynamicLog
+import XMonad.Hooks.UrgencyHook
 import qualified XMonad.StackSet as W
 import qualified Data.Map        as M
 
@@ -31,6 +32,7 @@ toAdd conf@(XConfig{modMask = modm}) =
     [ ((modm              , xK_minus     ), sendMessage Shrink )
     , ((modm              , xK_equal     ), sendMessage Expand )
     , ((modm              , xK_y         ), kill )
+    , ((modm              , xK_h         ), focusUrgent )
     , ((modm              , xK_l         ), windows toggleScreenFocus )
     , ((modm              , xK_semicolon ), windows greedyMoveWindow )
     ] ++
@@ -62,7 +64,9 @@ nextXineramaWorkspaceId [] = Nothing -- only one monitor
 nextXineramaWorkspaceId xs = Just (W.tag (W.workspace (head xs)))
 
 main = do 
-  xmonad =<< xmobar gnomeConfig
+  xmonad =<< xmobar (withUrgencyHook NoUrgencyHook $ myConfig)
+
+myConfig = gnomeConfig
     { terminal  = "gnome-terminal"
     , modMask   = mod4Mask
     , focusFollowsMouse = False

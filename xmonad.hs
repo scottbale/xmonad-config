@@ -48,7 +48,7 @@ toAdd conf@(XConfig{modMask = modm}) =
 uberFocus :: WindowSet->WindowSet
 uberFocus ws = case (moFocus ws) of
           True -> W.modify' W.focusDown' ws
-          False -> toggleScreenFocus ws
+          False -> W.focusMaster . toggleScreenFocus $ ws
 
 moFocus :: WindowSet->Bool
 moFocus ws = case currentStack of

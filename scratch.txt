@@ -30,3 +30,8 @@ StackSet {current = Screen {workspace = Workspace {tag = "0", layout = Full, sta
 
 
 
+*Main> let foo = testWS
+*Main> foo
+StackSet {current = Screen {workspace = Workspace {tag = "0", layout = Full, stack = Just (Stack {focus = 22, up = [], down = [33,44]})}, screen = S 0, screenDetail = SD {screenRect = Rectangle {rect_x = 0, rect_y = 1, rect_width = 2, rect_height = 3}}}, visible = [Screen {workspace = Workspace {tag = "1", layout = Full, stack = Nothing}, screen = S 1, screenDetail = SD {screenRect = Rectangle {rect_x = 2, rect_y = 3, rect_width = 4, rect_height = 5}}}], hidden = [Workspace {tag = "2", layout = Full, stack = Nothing},Workspace {tag = "3", layout = Full, stack = Nothing}], floating = fromList []}
+*Main> foldr (const uberFocus) foo [1..4]
+StackSet {current = Screen {workspace = Workspace {tag = "0", layout = Full, stack = Just (Stack {focus = 44, up = [33,22], down = []})}, screen = S 0, screenDetail = SD {screenRect = Rectangle {rect_x = 0, rect_y = 1, rect_width = 2, rect_height = 3}}}, visible = [Screen {workspace = Workspace {tag = "1", layout = Full, stack = Nothing}, screen = S 1, screenDetail = SD {screenRect = Rectangle {rect_x = 2, rect_y = 3, rect_width = 4, rect_height = 5}}}], hidden = [Workspace {tag = "2", layout = Full, stack = Nothing},Workspace {tag = "3", layout = Full, stack = Nothing}], floating = fromList []}

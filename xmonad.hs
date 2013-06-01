@@ -56,7 +56,7 @@ uberFocusDown = uberFocus W.down W.focusDown'
 uberFocus :: (W.Stack Window -> [Window])->(W.Stack Window -> W.Stack Window)->WindowSet->WindowSet
 uberFocus stackFn stackFocusFn ws = case (moFocus stackFn ws) of
           True -> W.modify' stackFocusFn ws
-          False -> W.focusMaster . toggleScreenFocus $ ws
+          False -> W.modify' stackFocusFn . toggleScreenFocus $ ws
 
 moFocus :: (W.Stack Window -> [Window])->WindowSet->Bool
 moFocus stackFn ws = case currentStack of

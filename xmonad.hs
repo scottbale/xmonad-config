@@ -48,13 +48,13 @@ toAdd conf@(XConfig{modMask = modm}) =
 -- Toggle focus between all windows of current screen, then toggle screen focus; repeat
 
 uberFocusUp :: WindowSet->WindowSet
-uberFocusUp ws = uberFocus ws W.up W.focusUp'
+uberFocusUp = uberFocus W.up W.focusUp'
 
 uberFocusDown :: WindowSet->WindowSet
-uberFocusDown ws = uberFocus ws W.down W.focusDown'
+uberFocusDown = uberFocus W.down W.focusDown'
 
-uberFocus :: WindowSet-> (W.Stack Window -> [Window])->(W.Stack Window -> W.Stack Window)->WindowSet
-uberFocus ws stackFn stackFocusFn = case (moFocus stackFn ws) of
+uberFocus :: (W.Stack Window -> [Window])->(W.Stack Window -> W.Stack Window)->WindowSet->WindowSet
+uberFocus stackFn stackFocusFn ws = case (moFocus stackFn ws) of
           True -> W.modify' stackFocusFn ws
           False -> W.focusMaster . toggleScreenFocus $ ws
 

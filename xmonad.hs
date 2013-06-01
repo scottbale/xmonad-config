@@ -34,7 +34,8 @@ toAdd conf@(XConfig{modMask = modm}) =
     , ((modm              , xK_equal     ), sendMessage Expand )
     , ((modm              , xK_y         ), kill )
     , ((modm              , xK_h         ), focusUrgent )
-    , ((modm              , xK_l         ), windows uberFocus )
+    , ((modm              , xK_l         ), windows uberFocusDown )
+    , ((modm .|. shiftMask, xK_l         ), windows uberFocusUp )
     , ((modm              , xK_semicolon ), windows toggleScreenFocus )
     , ((modm .|. shiftMask, xK_semicolon ), windows greedyMoveWindow )
     ] ++
@@ -45,14 +46,21 @@ toAdd conf@(XConfig{modMask = modm}) =
         , (f, m) <- [(W.greedyView, 0), (W.shift, shiftMask)]]
 
 -- Toggle focus between all windows of current screen, then toggle screen focus; repeat
-uberFocus :: WindowSet->WindowSet
-uberFocus ws = case (moFocus ws) of
-          True -> W.modify' W.focusDown' ws
+
+uberFocusUp :: WindowSet->WindowSet
+uberFocusUp ws = uberFocus ws W.up W.focusUp'
+
+uberFocusDown :: WindowSet->WindowSet
+uberFocusDown ws = uberFocus ws W.down W.focusDown'
+
+uberFocus :: WindowSet-> (W.Stack Window -> [Window])->(W.Stack Window -> W.Stack Window)->WindowSet
+uberFocus ws stackFn stackFocusFn = case (moFocus stackFn ws) of
+          True -> W.modify' stackFocusFn ws
           False -> W.focusMaster . toggleScreenFocus $ ws
 
-moFocus :: WindowSet->Bool
-moFocus ws = case currentStack of
-        Just s -> not $ null $ W.down s
+moFocus :: (W.Stack Window -> [Window])->WindowSet->Bool
+moFocus stackFn ws = case currentStack of
+        Just s -> not $ null $ stackFn s
         Nothing -> False
    where currentStack = W.stack . W.workspace . W.current $ ws
 

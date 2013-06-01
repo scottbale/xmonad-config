@@ -1,0 +1,32 @@
+C-c C-b switch to Haskell
+C-c C-l load file
+C-c M-. find definition
+C-c C-t type
+C-c TAB info
+
+-5/31/13-
+*Main> :t S 3
+S 3 :: ScreenId
+*Main> S 5
+S 5
+*Main> :t SD
+SD :: Rectangle -> ScreenDetail
+*Main> :t Rectangle
+Rectangle
+  :: Position -> Position -> Dimension -> Dimension -> Rectangle
+*Main> :i Position
+type Position = GHC.Int.Int32
+  	-- Defined in `Graphics.X11.Xlib.Types'
+*Main> Rectangle 2 2 3 3 
+Rectangle {rect_x = 2, rect_y = 2, rect_width = 3, rect_height = 3}
+*Main> :t Rectangle 2 2 3 3 
+Rectangle 2 2 3 3 :: Rectangle
+*Main> :t SD
+SD :: Rectangle -> ScreenDetail
+*Main> uberFocus testWS
+StackSet {current = Screen {workspace = Workspace {tag = "0", layout = Full, stack = Just (Stack {focus = 33, up = [22], down = [44]})}, screen = S 0, screenDetail = SD {screenRect = Rectangle {rect_x = 0, rect_y = 1, rect_width = 2, rect_height = 3}}}, visible = [Screen {workspace = Workspace {tag = "1", layout = Full, stack = Nothing}, screen = S 1, screenDetail = SD {screenRect = Rectangle {rect_x = 2, rect_y = 3, rect_width = 4, rect_height = 5}}}], hidden = [Workspace {tag = "2", layout = Full, stack = Nothing},Workspace {tag = "3", layout = Full, stack = Nothing}], floating = fromList []}
+*Main> (uberFocus . uberFocus) testWS
+StackSet {current = Screen {workspace = Workspace {tag = "0", layout = Full, stack = Just (Stack {focus = 44, up = [33,22], down = []})}, screen = S 0, screenDetail = SD {screenRect = Rectangle {rect_x = 0, rect_y = 1, rect_width = 2, rect_height = 3}}}, visible = [Screen {workspace = Workspace {tag = "1", layout = Full, stack = Nothing}, screen = S 1, screenDetail = SD {screenRect = Rectangle {rect_x = 2, rect_y = 3, rect_width = 4, rect_height = 5}}}], hidden = [Workspace {tag = "2", layout = Full, stack = Nothing},Workspace {tag = "3", layout = Full, stack = Nothing}], floating = fromList []}
+
+
+

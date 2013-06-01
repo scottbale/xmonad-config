@@ -6,6 +6,7 @@ import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.UrgencyHook
 import qualified XMonad.StackSet as W
 import qualified Data.Map        as M
+import qualified Graphics.X11.Types as X
 
 -- Ignore Gnome-Do
 myManageHook :: [ManageHook]
@@ -33,14 +34,27 @@ toAdd conf@(XConfig{modMask = modm}) =
     , ((modm              , xK_equal     ), sendMessage Expand )
     , ((modm              , xK_y         ), kill )
     , ((modm              , xK_h         ), focusUrgent )
-    , ((modm              , xK_l         ), windows toggleScreenFocus )
-    , ((modm              , xK_semicolon ), windows greedyMoveWindow )
+    , ((modm              , xK_l         ), windows uberFocus )
+    , ((modm              , xK_semicolon ), windows toggleScreenFocus )
+    , ((modm .|. shiftMask, xK_semicolon ), windows greedyMoveWindow )
     ] ++
 
     -- mod-{u,i,o,p,[,]} for workspaces 1,2,3,4,5,6
     [((m .|. modm, key), windows $ f i)
         | (i, key) <- zip (XMonad.workspaces conf) [xK_u, xK_i, xK_o, xK_p, xK_bracketleft, xK_bracketright]
         , (f, m) <- [(W.greedyView, 0), (W.shift, shiftMask)]]
+
+-- Toggle focus between all windows of current screen, then toggle screen focus; repeat
+uberFocus :: WindowSet->WindowSet
+uberFocus ws = case (moFocus ws) of
+          True -> W.modify' W.focusDown' ws
+          False -> toggleScreenFocus ws
+
+moFocus :: WindowSet->Bool
+moFocus ws = case currentStack of
+        Just s -> not $ null $ W.down s
+        Nothing -> False
+   where currentStack = W.stack . W.workspace . W.current $ ws
 
 -- Move window to next Xinerama screen, and follow focus
 greedyMoveWindow :: WindowSet->WindowSet
@@ -74,3 +88,13 @@ myConfig = gnomeConfig
     , keys = newKeys
     , startupHook = setWMName "LG3D"
     }
+
+-- testing ------------------------------------------------------------------------------
+
+testWS :: WindowSet
+testWS = foldr W.insertUp ws testWindows
+  where ws = W.new (Layout Full) ["0", "1", "2", "3"] [SD $ Rectangle 0 1 2 3, SD $ Rectangle 2 3 4 5]
+
+testWindows :: [X.Window]
+testWindows = [22, 33, 44]
+

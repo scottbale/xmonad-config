@@ -1,6 +1,7 @@
 import XMonad
 import XMonad.Core
 import XMonad.Config.Gnome
+import XMonad.Layout.NoBorders
 import XMonad.Hooks.SetWMName
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.UrgencyHook
@@ -20,6 +21,7 @@ newKeys x  = foldr (uncurry M.insert) (delKeys x) (toAdd    x)
 toRemove XConfig{modMask = modm} =
     [ (modm              , xK_h     )
     , (modm              , xK_l     )
+    , (modm              , xK_p     )
 --    , (modm              , xK_w     )
 --    , (modm              , xK_e     )
 --    , (modm              , xK_r     )
@@ -33,11 +35,10 @@ toAdd conf@(XConfig{modMask = modm}) =
     [ ((modm              , xK_minus     ), sendMessage Shrink )
     , ((modm              , xK_equal     ), sendMessage Expand )
     , ((modm              , xK_y         ), kill )
-    , ((modm              , xK_h         ), focusUrgent )
-    , ((modm              , xK_l         ), windows uberFocusDown )
-    , ((modm .|. shiftMask, xK_l         ), windows uberFocusUp )
-    , ((modm              , xK_semicolon ), windows toggleScreenFocus )
-    , ((modm .|. shiftMask, xK_semicolon ), windows greedyMoveWindow )
+--    , ((modm              , xK_h         ), focusUrgent )
+    , ((modm              , xK_h         ), windows uberFocusDown )
+    , ((modm              , xK_l         ), windows toggleScreenFocus )
+    , ((modm              , xK_semicolon ), windows greedyMoveWindow )
     ] ++
 
     -- mod-{u,i,o,p,[,]} for workspaces 1,2,3,4,5,6
@@ -85,12 +86,14 @@ nextXineramaWorkspaceId :: [W.Screen WorkspaceId l a sid sd]->Maybe WorkspaceId
 nextXineramaWorkspaceId [] = Nothing -- only one monitor
 nextXineramaWorkspaceId xs = Just (W.tag (W.workspace (head xs)))
 
-main = do 
-  xmonad =<< xmobar (withUrgencyHook NoUrgencyHook $ myConfig)
+main = xmonad myConfig 
+
+  -- =<< xmobar (withUrgencyHook NoUrgencyHook $ myConfig)
 
 myConfig = gnomeConfig
-    { terminal  = "gnome-terminal"
-    , modMask   = mod4Mask
+    { 
+      modMask   = mod4Mask
+    , layoutHook = smartBorders (layoutHook gnomeConfig)
     , focusFollowsMouse = False
     , manageHook = manageHook gnomeConfig <+> composeAll myManageHook
     , keys = newKeys
